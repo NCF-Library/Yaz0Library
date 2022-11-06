@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Copyright>(c) exelix and KillzXGaming, licensed under GPL-3.0-or-later</Copyright>
+    <TargetFramework>net5.0</TargetFramework>
+	<TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+	<packageReadmeFile>README.md</packageReadmeFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Authors>exelix and KillzXGaming. (Updated by ArchLeaders)</Authors>
+    <Description>Updated version of exelix's Yaz0 implemetation.</Description>
+    <PackageProjectUrl>https://github.com/ArchLeaders/NCF-Library/tree/master/Yaz0Library</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/ArchLeaders/NCF-Library/tree/master/Yaz0Library</RepositoryUrl>
+    <PackageTags>yaz0;de/compression;botw;nintendo;zelda</PackageTags>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+	<VersionPrefix>1.0.4</VersionPrefix>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Lib\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
