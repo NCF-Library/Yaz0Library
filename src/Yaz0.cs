@@ -12,22 +12,22 @@ namespace Nintendo.Yaz0
     {
         //
         // C entry points
-        #region Expand
+#region Expand
 
-        [DllImport("Lib\\Yaz0.dll", EntryPoint = "decompress", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("./Lib/Yaz0.dll", EntryPoint = "decompress", CallingConvention = CallingConvention.Cdecl)]
         internal static extern unsafe byte* C_Decompress(byte* src, uint srcLen, uint* destLen);
 
-        [DllImport("Lib\\Yaz0.dll", EntryPoint = "compress", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("./Lib/Yaz0.dll", EntryPoint = "compress", CallingConvention = CallingConvention.Cdecl)]
         internal static extern unsafe byte* C_Compress(byte* src, uint srcLen, uint* destLen, byte optCompr);
 
-        [DllImport("Lib\\Yaz0.dll", EntryPoint = "freePtr", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("./Lib/Yaz0.dll", EntryPoint = "freePtr", CallingConvention = CallingConvention.Cdecl)]
         internal static extern unsafe void C_FreePtr(void* ptr);
 
-        #endregion
+#endregion
 
         //
         // C wrapper
-        #region Expand
+#region Expand
 
         public static unsafe byte[] CompressFast(string fileName, int level = 7) => CompressFast(File.ReadAllBytes(fileName), level);
         public static unsafe byte[] CompressFast(byte[] data, int level = 7)
@@ -74,11 +74,11 @@ namespace Nintendo.Yaz0
             }
         }
 
-        #endregion
+#endregion
 
         //
         // C# implementation
-        #region Expand
+#region Expand
 
         public static unsafe byte[] Compress(string FileName, int level = 7, uint res1 = 0, uint res2 = 0) => Compress(File.ReadAllBytes(FileName), level, res1, res2);
         public static unsafe byte[] Compress(byte[] Data, int level = 7, uint reserved1 = 0, uint reserved2 = 0)
@@ -230,6 +230,6 @@ namespace Nintendo.Yaz0
             }
         }
 
-        #endregion
+#endregion
     }
 }
