@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Copyright>(c) exelix and KillzXGaming, licensed under GPL-3.0-or-later</Copyright>
     <TargetFramework>net7.0</TargetFramework>
-	<TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+	<TargetFrameworks>net7.0</TargetFrameworks>
 	<packageReadmeFile>README.md</packageReadmeFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Authors>exelix and KillzXGaming. (Updated by ArchLeaders)</Authors>
