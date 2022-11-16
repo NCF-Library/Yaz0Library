@@ -30,14 +30,14 @@ jobs:
         run: dotnet restore src/${{ env.csproj }}.csproj
 
       - name: "Build project"
-        run: dotnet build src/${{ env.csproj }}.csproj --no-restore --configuration Release
+        run: dotnet build src/${{ env.csproj }}.csproj --no-restore -c Release
 
       - name: "Get Version"
         id: version
         uses: battila7/get-version-action@v2
 
       - name: "Pack project"
-        run: dotnet pack src/${{ env.csproj }}.csproj --no-restore --configuration Release -p:PackageVersion=${{ steps.version.outputs.version-without-v }} --output ${{ env.build }}
+        run: dotnet pack src/${{ env.csproj }}.csproj --no-restore -c Release -p:PackageVersion=${{ steps.version.outputs.version-without-v }} --output ${{ env.build }}
 
       - name: "Push package"
         run: dotnet nuget push ${{ env.build }}/*.nupkg -k ${{ secrets.nuget_auth }} -s ${{ env.nuget }}

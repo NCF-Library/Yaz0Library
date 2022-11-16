@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Copyright>(c) exelix and KillzXGaming, licensed under GPL-3.0-or-later</Copyright>
-    <TargetFramework>net5.0</TargetFramework>
-	<TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <TargetFramework>net7.0</TargetFramework>
+	<TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
 	<packageReadmeFile>README.md</packageReadmeFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Authors>exelix and KillzXGaming. (Updated by ArchLeaders)</Authors>
@@ -15,6 +15,22 @@
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	<VersionPrefix>1.0.4</VersionPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
