@@ -1,46 +1,64 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Nintendo.Yaz0
+namespace Yaz0Library
 {
-    /// <summary>
-    /// <para><u>Note:</u> to use the fast compressor/decompressor you must have the compiled C library <b><a href="https://github.com/ArchLeaders/NCF-Library/raw/master/Yaz0Library/Yaz0.dll">Yaz0.dll</a></b> in the root build folder.</para>
-    /// <para><i>C# implementation of Yaz0 copied from KillzXGaming's <a href="https://github.com/KillzXGaming/BfresPlatformConverter/blob/master/YAZ0.cs">BfresPLatformConverter</a></i></para>
-    /// </summary>
-    public class Yaz0
+    public partial class Yaz0
     {
-        //
-        // C entry points
-#region Expand
+        private static bool IsLoaded = false;
 
-        [DllImport("./Lib/Yaz0.dll", EntryPoint = "decompress", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe byte* C_Decompress(byte* src, uint srcLen, uint* destLen);
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        internal static extern IntPtr SetDllDirectory(string lpFileName);
 
-        [DllImport("./Lib/Yaz0.dll", EntryPoint = "compress", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe byte* C_Compress(byte* src, uint srcLen, uint* destLen, byte optCompr);
+        [LibraryImport("Yaz0.dll", EntryPoint = "decompress")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        internal static unsafe partial byte* Decompress(byte* src, uint srcLen, uint* destLen);
 
-        [DllImport("./Lib/Yaz0.dll", EntryPoint = "freePtr", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe void C_FreePtr(void* ptr);
+        [LibraryImport("Yaz0.dll", EntryPoint = "compress")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        internal static unsafe partial byte* Compress(byte* src, uint srcLen, uint* destLen, byte optCompr);
 
-#endregion
+        [LibraryImport("Yaz0.dll", EntryPoint = "freePtr")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        internal static unsafe partial void FreePtr(void* ptr);
 
-        //
-        // C wrapper
-#region Expand
+        internal static void LoadDll()
+        {
+            if (IsLoaded) {
+                return;
+            }
+
+            string path = Path.Combine(Path.GetTempPath(), "Yaz0Library");
+
+            // Extract unmanaged DLL (assume there will be no newer version of Yaz0.dll)
+            if (!File.Exists(path)) {
+                Directory.CreateDirectory(path);
+                using Stream stream = Assembly.GetCallingAssembly().GetManifestResourceStream("Yaz0Library.Lib.Yaz0.dll");
+                using FileStream fs = File.Create(Path.Combine(path, "Yaz0.dll"));
+                stream.CopyTo(fs);
+            }
+
+            SetDllDirectory(path);
+            IsLoaded = true;
+        }
 
         public static unsafe byte[] CompressFast(string fileName, int level = 7) => CompressFast(File.ReadAllBytes(fileName), level);
         public static unsafe byte[] CompressFast(byte[] data, int level = 7)
         {
+            LoadDll();
+
             uint srcLen = (uint)data.Length;
             uint destLen;
             fixed (byte* inputPtr = data) {
 
                 // Compress byte ptr
-                byte* outputPtr = C_Compress(inputPtr, srcLen, &destLen, (byte)level);
+                byte* outputPtr = Compress(inputPtr, srcLen, &destLen, (byte)level);
 
                 // Write header
-                byte[] comp = new byte[] {
+                byte[] comp = new byte[8] {
                     (byte)'Y',
                     (byte)'a',
                     (byte)'z',
@@ -54,7 +72,7 @@ namespace Nintendo.Yaz0
                 // Copy to a byte[]
                 Array.Resize(ref comp, (int)destLen + 16);
                 Marshal.Copy((IntPtr)outputPtr, comp, 16, (int)destLen);
-                C_FreePtr(outputPtr);
+                FreePtr(outputPtr);
                 return comp;
             }
         }
@@ -63,13 +81,15 @@ namespace Nintendo.Yaz0
         public static unsafe byte[] DecompressFast(string file) => DecompressFast(File.ReadAllBytes(file));
         public static unsafe byte[] DecompressFast(byte[] data)
         {
+            LoadDll();
+
             uint srcLen = (uint)data.Length;
             uint destLen;
             fixed (byte* inputPtr = data) {
-                byte* outputPtr = C_Decompress(inputPtr, srcLen, &destLen);
+                byte* outputPtr = Decompress(inputPtr, srcLen, &destLen);
                 byte[] decomp = new byte[destLen];
                 Marshal.Copy((IntPtr)outputPtr, decomp, 0, (int)destLen);
-                C_FreePtr(outputPtr);
+                FreePtr(outputPtr);
                 return decomp;
             }
         }
@@ -87,7 +107,7 @@ namespace Nintendo.Yaz0
         // 
         // The above copyright notice and this permission notice shall be included in all
         // copies or substantial portions of the Software.
-        //
+        // 
         // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
         // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
         // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -245,7 +265,5 @@ namespace Nintendo.Yaz0
                 }
             }
         }
-
-#endregion
     }
 }

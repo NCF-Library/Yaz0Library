@@ -14,7 +14,6 @@
     <PackageTags>yaz0;de/compression;botw;nintendo;zelda</PackageTags>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-	<VersionPrefix>1.0.4</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
@@ -48,9 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include=".\Lib\Yaz0.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include=".\Lib\Yaz0.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
