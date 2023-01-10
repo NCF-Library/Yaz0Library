@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -27,8 +28,8 @@ namespace Yaz0Library
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static partial bool FreeResource(IntPtr vector_ptr);
 
-        [DllImport("Cead.dll")]
-        internal static unsafe extern void Compress(byte* src, uint src_len, out VectorSafeHandle dst_handle, out byte* dst, out uint dst_len, uint data_alignment, int level);
+        [LibraryImport("Cead.dll")]
+        internal static unsafe partial void Compress(byte* src, int src_len, out VectorSafeHandle dst_handle, out byte* dst, out int dst_len, uint data_alignment, int level);
 
         [LibraryImport("Cead.dll")]
         internal static unsafe partial void Decompress(byte* src, int src_len, byte* dst, int dst_len);
@@ -90,8 +91,8 @@ namespace Yaz0Library
             LoadDlls();
 
             fixed (byte* srcPtr = src) {
-                Compress(srcPtr, (uint)src.Length, out VectorSafeHandle dstHandle, out byte* dst, out uint dstLen, 0, level);
-                return new(dst, (int)dstLen);
+                Compress(srcPtr, src.Length, out VectorSafeHandle dstHandle, out byte* dst, out int dstLen, 0, level);
+                return new(dst, dstLen);
             }
         }
 
