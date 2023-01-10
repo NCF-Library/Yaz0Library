@@ -8,16 +8,11 @@ namespace Yaz0Tests
     {
         private const string Path = "D:\\Bin\\Yaz0Library\\Enemy_Lynel_Dark.sbactorpack";
 
-        [Benchmark]
-        public byte[] Yaz0Impl()
-        {
-            return Yaz0.DecompressUnmanaged(Path);
-        }
 
         [Benchmark]
         public byte[] IlImpl()
         {
-            return Yaz0.DecompressManaged(Path);
+            return Yaz0Managed.Decompress(Path);
         }
 
         [Benchmark]
