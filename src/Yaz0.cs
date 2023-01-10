@@ -34,32 +34,37 @@ namespace Yaz0Library
         internal static unsafe partial void Decompress(byte* src, int src_len, byte* dst, int dst_len);
 
         [LibraryImport("Yaz0.dll", EntryPoint = "decompress")]
-        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-        internal static unsafe partial byte* Decompress(byte* src, uint srcLen, uint* destLen);
+        internal static unsafe partial byte* YazDecompress(byte* src, uint srcLen, uint* destLen);
 
         [LibraryImport("Yaz0.dll", EntryPoint = "compress")]
-        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-        internal static unsafe partial byte* Compress(byte* src, uint srcLen, uint* destLen, byte optCompr);
+        internal static unsafe partial byte* YazCompress(byte* src, uint srcLen, uint* destLen, byte optCompr);
 
         [LibraryImport("Yaz0.dll", EntryPoint = "freePtr")]
-        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
         internal static unsafe partial void FreePtr(void* ptr);
 
-        internal static void LoadDll()
+        internal static void LoadDlls()
         {
             if (IsLoaded) {
                 return;
             }
 
             string path = Path.Combine(Path.GetTempPath(), "Yaz0Library");
+            string dll = Path.Combine(path, "Cead.dll");
 
             // Extract unmanaged DLL (assume there will be no newer version of Yaz0.dll)
-            if (!File.Exists(path)) {
+#if DEBUG
+            Directory.CreateDirectory(path);
+            using Stream stream = Assembly.GetCallingAssembly().GetManifestResourceStream($"Yaz0Library.Lib.Cead.dll");
+            using FileStream fs = File.Create(dll);
+            stream.CopyTo(fs);
+#else
+            if (!File.Exists(dll) || true) {
                 Directory.CreateDirectory(path);
-                using Stream stream = Assembly.GetCallingAssembly().GetManifestResourceStream("Yaz0Library.Lib.Yaz0.dll");
-                using FileStream fs = File.Create(Path.Combine(path, "Yaz0.dll"));
+                using Stream stream = Assembly.GetCallingAssembly().GetManifestResourceStream($"Yaz0Library.Lib.Cead.dll");
+                using FileStream fs = File.Create(dll);
                 stream.CopyTo(fs);
             }
+#endif
 
             SetDllDirectory(path);
             IsLoaded = true;
@@ -90,17 +95,17 @@ namespace Yaz0Library
             }
         }
 
-        public static unsafe byte[] CompressFast(string fileName, int level = 7) => CompressFast(File.ReadAllBytes(fileName), level);
-        public static unsafe byte[] CompressFast(byte[] data, int level = 7)
+        public static unsafe byte[] CompressUnmanaged(string fileName, int level = 7) => CompressUnmanaged(File.ReadAllBytes(fileName), level);
+        public static unsafe byte[] CompressUnmanaged(ReadOnlySpan<byte> data, int level = 7)
         {
-            LoadDll();
+            LoadDlls();
 
             uint srcLen = (uint)data.Length;
             uint destLen;
             fixed (byte* inputPtr = data) {
 
                 // Compress byte ptr
-                byte* outputPtr = Compress(inputPtr, srcLen, &destLen, (byte)level);
+                byte* outputPtr = YazCompress(inputPtr, srcLen, &destLen, (byte)level);
 
                 // Write header
                 byte[] comp = new byte[8] {
@@ -123,15 +128,15 @@ namespace Yaz0Library
         }
 
 
-        public static unsafe byte[] DecompressFast(string file) => DecompressFast(File.ReadAllBytes(file));
-        public static unsafe byte[] DecompressFast(byte[] data)
+        public static unsafe byte[] DecompressUnmanaged(string file) => DecompressUnmanaged(File.ReadAllBytes(file));
+        public static unsafe byte[] DecompressUnmanaged(ReadOnlySpan<byte> data)
         {
-            LoadDll();
+            LoadDlls();
 
             uint srcLen = (uint)data.Length;
             uint destLen;
             fixed (byte* inputPtr = data) {
-                byte* outputPtr = Decompress(inputPtr, srcLen, &destLen);
+                byte* outputPtr = YazDecompress(inputPtr, srcLen, &destLen);
                 byte[] decomp = new byte[destLen];
                 Marshal.Copy((IntPtr)outputPtr, decomp, 0, (int)destLen);
                 FreePtr(outputPtr);
@@ -161,23 +166,23 @@ namespace Yaz0Library
         // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
         // SOFTWARE.
 
-        public static unsafe byte[] Compress(string FileName, int level = 7, uint res1 = 0, uint res2 = 0) => Compress(File.ReadAllBytes(FileName), level, res1, res2);
-        public static unsafe byte[] Compress(byte[] Data, int level = 7, uint reserved1 = 0, uint reserved2 = 0)
+        public static unsafe byte[] CompressManaged(string FileName, int level = 7, uint res1 = 0, uint res2 = 0) => CompressManaged(File.ReadAllBytes(FileName), level, res1, res2);
+        public static unsafe byte[] CompressManaged(byte[] data, int level = 7, uint reserved1 = 0, uint reserved2 = 0)
         {
             int maxBackLevel = (int)(0x10e0 * (level / 9.0) - 0x0e0);
 
-            byte* dataptr = (byte*)Marshal.UnsafeAddrOfPinnedArrayElement(Data, 0);
+            byte* dataptr = (byte*)Marshal.UnsafeAddrOfPinnedArrayElement(data, 0);
 
-            byte[] result = new byte[Data.Length + Data.Length / 8 + 0x10];
+            byte[] result = new byte[data.Length + data.Length / 8 + 0x10];
             byte* resultptr = (byte*)Marshal.UnsafeAddrOfPinnedArrayElement(result, 0);
             *resultptr++ = (byte)'Y';
             *resultptr++ = (byte)'a';
             *resultptr++ = (byte)'z';
             *resultptr++ = (byte)'0';
-            *resultptr++ = (byte)((Data.Length >> 24) & 0xFF);
-            *resultptr++ = (byte)((Data.Length >> 16) & 0xFF);
-            *resultptr++ = (byte)((Data.Length >> 8) & 0xFF);
-            *resultptr++ = (byte)((Data.Length >> 0) & 0xFF);
+            *resultptr++ = (byte)((data.Length >> 24) & 0xFF);
+            *resultptr++ = (byte)((data.Length >> 16) & 0xFF);
+            *resultptr++ = (byte)((data.Length >> 8) & 0xFF);
+            *resultptr++ = (byte)((data.Length >> 0) & 0xFF);
             {
                 var res1 = BitConverter.GetBytes(reserved1);
                 var res2 = BitConverter.GetBytes(reserved2);
@@ -195,7 +200,7 @@ namespace Yaz0Library
                 *resultptr++ = res2[2];
                 *resultptr++ = res2[3];
             }
-            int length = Data.Length;
+            int length = data.Length;
             int dstoffs = 16;
             int Offs = 0;
             while (true)
@@ -280,32 +285,40 @@ namespace Yaz0Library
             return realresult;
         }
 
-        public static byte[] Decompress(string file) => Decompress(File.ReadAllBytes(file));
-        public static byte[] Decompress(byte[] Data)
+        public static byte[] DecompressManaged(string file) => DecompressManaged(File.ReadAllBytes(file));
+        public static byte[] DecompressManaged(ReadOnlySpan<byte> data)
         {
-            uint leng = (uint)(Data[4] << 24 | Data[5] << 16 | Data[6] << 8 | Data[7]);
-            byte[] Result = new byte[leng];
+            uint leng = (uint)(data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7]);
+            byte[] result = new byte[leng];
             int Offs = 16;
             int dstoffs = 0;
             while (true)
             {
-                byte header = Data[Offs++];
+                byte header = data[Offs++];
                 for (int i = 0; i < 8; i++)
                 {
-                    if ((header & 0x80) != 0) Result[dstoffs++] = Data[Offs++];
+                    if ((header & 0x80) != 0) {
+                        result[dstoffs++] = data[Offs++];
+                    }
                     else
                     {
-                        byte b = Data[Offs++];
-                        int offs = ((b & 0xF) << 8 | Data[Offs++]) + 1;
+                        byte b = data[Offs++];
+                        int offs = ((b & 0xF) << 8 | data[Offs++]) + 1;
                         int length = (b >> 4) + 2;
-                        if (length == 2) length = Data[Offs++] + 0x12;
+                        if (length == 2) {
+                            length = data[Offs++] + 0x12;
+                        }
+
                         for (int j = 0; j < length; j++)
                         {
-                            Result[dstoffs] = Result[dstoffs - offs];
+                            result[dstoffs] = result[dstoffs - offs];
                             dstoffs++;
                         }
                     }
-                    if (dstoffs >= leng) return Result;
+                    if (dstoffs >= leng) {
+                        return result;
+                    }
+
                     header <<= 1;
                 }
             }
