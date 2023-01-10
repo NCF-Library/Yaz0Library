@@ -1,16 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>(c) exelix and KillzXGaming, licensed under GPL-3.0-or-later</Copyright>
+    <Copyright>(c) ArchLeaders and exelix, licensed under GPL-3.0-or-later</Copyright>
     <TargetFramework>net7.0</TargetFramework>
-	<TargetFrameworks>net7.0</TargetFrameworks>
-	<packageReadmeFile>README.md</packageReadmeFile>
+    <packageReadmeFile>README.md</packageReadmeFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Authors>exelix and KillzXGaming. (Updated by ArchLeaders)</Authors>
-    <Description>Updated version of exelix's Yaz0 implemetation.</Description>
-    <PackageProjectUrl>https://github.com/ArchLeaders/NCF-Library/tree/master/Yaz0Library</PackageProjectUrl>
+    <Authors>ArchLeaders and exelix</Authors>
+    <Description>C# managed wrapper and implementations for sYaz0 compression and decompression.</Description>
+    <PackageProjectUrl>https://github.com/NCF-Library/Yaz0Library</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
-    <RepositoryUrl>https://github.com/ArchLeaders/NCF-Library/tree/master/Yaz0Library</RepositoryUrl>
+    <RepositoryUrl>https://github.com/NCF-Library/Yaz0Library</RepositoryUrl>
     <PackageTags>yaz0;de/compression;botw;nintendo;zelda</PackageTags>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
