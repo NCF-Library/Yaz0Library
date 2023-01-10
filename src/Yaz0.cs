@@ -10,14 +10,6 @@ namespace Yaz0Library
 {
     public partial class Yaz0
     {
-        internal unsafe class VectorSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
-        {
-            public VectorSafeHandle() : base(true) { }
-            protected override bool ReleaseHandle()
-            {
-                return FreeResource(handle);
-            }
-        }
 
         private static bool IsLoaded = false;
 
