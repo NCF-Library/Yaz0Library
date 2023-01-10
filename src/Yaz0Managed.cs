@@ -4,9 +4,7 @@ namespace Yaz0Library
 {
     /// <summary>
     /// <para>Managed C# implementation of Yaz0 de/compression.</para>
-    /// 
-    /// <a href="https://github.com/KillzXGaming/BfresPlatformConverter/blob/master/LICENSE">MIT License</a><br/>
-    /// Copyright © 2020 <a href="https://github.com/KillzXGaming/">KillzXGaming</a><br/>
+    /// Copyright © 2018 <a href="https://github.com/exelix11/">exelix</a><br/>
     /// </summary>
     public class Yaz0Managed
     {
