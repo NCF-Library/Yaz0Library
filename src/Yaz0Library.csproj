@@ -47,9 +47,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include=".\Lib\Yaz0.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
+	<EmbeddedResource Include="Lib\Yaz0.dll" />
+    <EmbeddedResource Include="Lib\Cead.dll" />
   </ItemGroup>
 
 </Project>
