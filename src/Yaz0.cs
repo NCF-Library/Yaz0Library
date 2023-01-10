@@ -15,7 +15,8 @@ namespace Yaz0Library
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static partial bool FreeResource(IntPtr vector_ptr);
 
-        public static unsafe ReadOnlySpan<byte> Compress(ReadOnlySpan<byte> src, int level = 7)
+        public static unsafe Span<byte> Compress(string file, int level = 7) => Compress(File.ReadAllBytes(file), level);
+        public static unsafe Span<byte> Compress(ReadOnlySpan<byte> src, int level = 7)
         {
             Yaz0Helper.LoadDlls();
 
@@ -25,6 +26,7 @@ namespace Yaz0Library
             }
         }
 
+        public static unsafe Span<byte> Decompress(string file) => Decompress(File.ReadAllBytes(file));
         public static unsafe Span<byte> Decompress(ReadOnlySpan<byte> src)
         {
             Yaz0Helper.LoadDlls();
