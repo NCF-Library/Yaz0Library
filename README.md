@@ -4,7 +4,7 @@ C# managed wrapper and implementations for sYaz0 compression and decompression.
 
 ### Usage
 
-### DLL Loader
+#### DLL Loader
 
 **Yaz0Library** uses unmanaged libraries that need to be extracted, this is only done once per user, but can cause issues if it's used with parallel code and not previously extracted.
 To fix any possible issues, run `Yaz0Helper.LoadDlls()` before any parallel code runs (preferably at the start of the programs `Main` function).
