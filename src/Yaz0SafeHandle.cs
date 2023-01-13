@@ -2,9 +2,9 @@
 
 namespace Yaz0Library
 {
-    internal class VectorSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
+    public class Yaz0SafeHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
-        internal VectorSafeHandle() : base(true) { }
+        public Yaz0SafeHandle() : base(true) { }
         protected override bool ReleaseHandle()
         {
             return Yaz0.FreeResource(handle);
