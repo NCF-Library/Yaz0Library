@@ -8,13 +8,13 @@ C# managed wrapper and implementations for sYaz0 compression and decompression.
 
 ```cs
 // Compress a file
-Span<byte> compressed = Yaz0.Compress("path/to/uncompressed_file.bin");
+Span<byte> compressed = Yaz0.Compress("path/to/uncompressed_file.bin", out Yaz0SafeHandle handle);
 ```
 
 ```cs
 // Compress a byte[]
 byte[] uncompressed = sarc["path/to/uncompressed_file.bin"];
-Span<byte> compressed = Yaz0.Compress(uncompressed);
+Span<byte> compressed = Yaz0.Compress(uncompressed, out Yaz0SafeHandle handle);
 ```
 
 #### Decompress
